@@ -2,7 +2,7 @@
 
 ## Command line Usage Instructions
 In order to compile the java files run the following from the root folder of the repo:
-* `javac -d bin src/server/*.java src/client/*.java`
+* `javac -d bin src/server/*.java src/server/auth/*.java src/client/*.java`
 
 This will create a bin folder with all the compiled .class files.
 

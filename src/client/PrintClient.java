@@ -15,96 +15,123 @@ public class PrintClient {
             PrintServerInterface server = (PrintServerInterface) registry.lookup("PrintServer");
 
             // Call the server's methods and print the results
-            printResult(server, "example.pdf", "MyPrinter");
-            queueResult(server, "MyPrinter");
-            topQueueResult(server, "MyPrinter", 2); // Move the 2nd job to the top.
-            startResult(server);
-            stopResult(server);
-            restartResult(server);
-            statusResult(server, "MyPrinter");
-            readConfigResult(server, "someParameter");
-            setConfigResult(server, "someParameter", "NewValue");
+            register(server, "lefteris", "password123");
+            String token = signIn(server, "lefteris", "password123");
+            print(server, "example.pdf", "MyPrinter", "lefteris", token);
+            queue(server, "MyPrinter", "lefteris", token);
+            topQueue(server, "MyPrinter", 2, "lefteris", token); // Move the 2nd job to the top.
+            start(server, "lefteris", token);
+            stop(server, "lefteris", token);
+            restart(server, "lefteris", token);
+            status(server, "MyPrinter", "lefteris", token);
+            setConfig(server, "someParameter", "NewValue", "lefteris", token);
+            readConfig(server, "someParameter", "lefteris", token);
+            
         } catch (Exception e) {
             System.err.println("Client exception: " + e.toString());
             e.printStackTrace();
         }
     }
 
-    private static void printResult(PrintServerInterface server, String filename, String printer) throws RemoteException {
+    private static void register(PrintServerInterface server, String username, String password) throws RemoteException {
         try {
-            String output = server.print(filename, printer);
+            String output = server.register(username, password);
             System.out.println("Client: " + output);
         } catch (RemoteException e) {
             System.err.println("Error: " + e.getMessage());
         }
     }
 
-    private static void queueResult(PrintServerInterface server, String printer) throws RemoteException {
+    private static String signIn(PrintServerInterface server, String username, String password) throws RemoteException {
+        String token = null;
         try {
-            String output = server.queue(printer);
+            token = server.signIn(username, password);
+            if( token != null) {
+                System.out.println("Client: User " + username + "signed in successfully!");
+            }
+            return token;
+            
+        } catch (RemoteException e) {
+            System.err.println("Error: " + e.getMessage());
+            return token;
+        }
+    }
+
+    private static void print(PrintServerInterface server, String filename, String printer, String username, String token) throws RemoteException {
+        try {
+            String output = server.print(filename, printer, username, token);
             System.out.println("Client: " + output);
         } catch (RemoteException e) {
             System.err.println("Error: " + e.getMessage());
         }
     }
 
-    private static void topQueueResult(PrintServerInterface server, String printer, int job) throws RemoteException {
+    private static void queue(PrintServerInterface server, String printer, String username, String token) throws RemoteException {
         try {
-            String output = server.topQueue(printer, job);
+            String output = server.queue(printer, username, token);
             System.out.println("Client: " + output);
         } catch (RemoteException e) {
             System.err.println("Error: " + e.getMessage());
         }
     }
 
-    private static void startResult(PrintServerInterface server) throws RemoteException {
+    private static void topQueue(PrintServerInterface server, String printer, int job, String username, String token) throws RemoteException {
         try {
-            String output = server.start();
+            String output = server.topQueue(printer, job, username, token);
             System.out.println("Client: " + output);
         } catch (RemoteException e) {
             System.err.println("Error: " + e.getMessage());
         }
     }
 
-    private static void stopResult(PrintServerInterface server) throws RemoteException {
+    private static void start(PrintServerInterface server, String username, String token) throws RemoteException {
         try {
-            String output = server.stop();
+            String output = server.start(username, token);
             System.out.println("Client: " + output);
         } catch (RemoteException e) {
             System.err.println("Error: " + e.getMessage());
         }
     }
 
-    private static void restartResult(PrintServerInterface server) throws RemoteException {
+    private static void stop(PrintServerInterface server, String username, String token) throws RemoteException {
         try {
-            String output = server.restart();
+            String output = server.stop(username, token);
             System.out.println("Client: " + output);
         } catch (RemoteException e) {
             System.err.println("Error: " + e.getMessage());
         }
     }
 
-    private static void statusResult(PrintServerInterface server, String printer) throws RemoteException {
+    private static void restart(PrintServerInterface server, String username, String token) throws RemoteException {
         try {
-            String output = server.status(printer);
+            String output = server.restart(username, token);
             System.out.println("Client: " + output);
         } catch (RemoteException e) {
             System.err.println("Error: " + e.getMessage());
         }
     }
 
-    private static void readConfigResult(PrintServerInterface server, String parameter) throws RemoteException {
+    private static void status(PrintServerInterface server, String printer, String username, String token) throws RemoteException {
         try {
-            String output = server.readConfig(parameter);
+            String output = server.status(printer, username, token);
             System.out.println("Client: " + output);
         } catch (RemoteException e) {
             System.err.println("Error: " + e.getMessage());
         }
     }
 
-    private static void setConfigResult(PrintServerInterface server, String parameter, String value) throws RemoteException {
+    private static void readConfig(PrintServerInterface server, String parameter, String username, String token) throws RemoteException {
         try {
-            String output = server.setConfig(parameter, value);
+            String output = server.readConfig(parameter, username, token);
+            System.out.println("Client: " + output);
+        } catch (RemoteException e) {
+            System.err.println("Error: " + e.getMessage());
+        }
+    }
+
+    private static void setConfig(PrintServerInterface server, String parameter, String value, String username, String token) throws RemoteException {
+        try {
+            String output = server.setConfig(parameter, value, username, token);
             System.out.println("Client: " + output);
         } catch (RemoteException e) {
             System.err.println("Error: " + e.getMessage());

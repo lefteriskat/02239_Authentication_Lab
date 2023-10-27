@@ -9,7 +9,7 @@ public class PrintServer {
             // Create the server object
             PrintServerInterface server = new PrintServerImpl();
 
-            // Create and start the RMI registry on port 1099
+            // Create and start the RMI registry on port 1077
             Registry registry = LocateRegistry.createRegistry(1077);
 
             // Bind the server object to a name
