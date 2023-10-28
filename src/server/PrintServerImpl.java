@@ -22,6 +22,13 @@ public class PrintServerImpl extends UnicastRemoteObject implements PrintServerI
         authenticationService = new AuthenticationService();
     }
 
+    public PrintServerImpl(Map<String, Printer> _printers) throws RemoteException {
+        isPrintServerRunning = false;
+        configParams = new HashMap<>();
+        printers = _printers;
+        authenticationService = new AuthenticationService();
+    }
+
     @Override
     public String register(String username, String password) throws RemoteException {
         String output;
@@ -60,8 +67,15 @@ public class PrintServerImpl extends UnicastRemoteObject implements PrintServerI
     @Override
     public String print(String filename, String printer, String username, String token) throws RemoteException {
         if (authenticationService.authenticateWithToken(username, token)) {
-            String output = "File: " + filename + "printed at Printer: " + printer + "!";
-            System.out.println("Server: "+output);
+            Printer target = printers.get(printer);
+            String output;
+            if ( target != null) {
+                output = "File: " + filename + " printed at Printer: " + printer + "!";
+            }
+            else {
+                output = "No printer with name: " + printer + " !";
+            }
+            System.out.println("Server: " + output);
             return output;
         }
         return AUTHENTICATION_ERROR;
@@ -78,7 +92,7 @@ public class PrintServerImpl extends UnicastRemoteObject implements PrintServerI
             else {
                 output = "No printer with name: " + printer + " !";
             }
-            System.out.println("Server: "+output);
+            System.out.println("Server: " + output);
             return output;
         }
         return AUTHENTICATION_ERROR;

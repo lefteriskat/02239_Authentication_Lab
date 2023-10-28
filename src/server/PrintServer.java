@@ -2,13 +2,20 @@ package server;
 
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.util.HashMap;
+import java.util.Map;
 
 public class PrintServer {
     public static void main(String[] args) {
         try {
-            // Create the server object
-            PrintServerInterface server = new PrintServerImpl();
-
+            // Create printers to be used for the server
+            Printer printer1 = new Printer("MyPrinter1");
+            Printer printer2 = new Printer("MyPrinter2");
+            Map<String, Printer> printers = Map.of(printer1.getName(), printer1, printer2.getName(), printer2);
+            
+            // Create the server object with the printers
+            PrintServerInterface server = new PrintServerImpl(printers);
+            
             // Create and start the RMI registry on port 1077
             Registry registry = LocateRegistry.createRegistry(1077);
 
