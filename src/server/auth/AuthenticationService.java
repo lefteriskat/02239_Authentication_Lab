@@ -1,14 +1,15 @@
 package server.auth;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.MessageDigest;
 import java.security.SecureRandom;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -20,7 +21,9 @@ public class AuthenticationService {
 
     public static final long TOKEN_VALIDITY_PERIOD = 3600000; // 1 hour in milliseconds
 
-    public static class User implements Serializable{
+    public static final String USER_DETAIL_DELIMITER = ":::";
+
+    public static class User{
         private String username;
         private byte[] salt;
         private byte[] passwordHash;
@@ -30,6 +33,13 @@ public class AuthenticationService {
             this.username = username;
             this.salt = salt;
             this.passwordHash = passwordHash;
+        }
+
+        public User(String userString) {
+            String[] userStringArray = userString.split(USER_DETAIL_DELIMITER);
+            this.username = userStringArray[0];
+            this.salt = Base64.getDecoder().decode(userStringArray[1]);
+            this.passwordHash = Base64.getDecoder().decode(userStringArray[2]);
         }
 
         public String getUsername() {
@@ -51,6 +61,11 @@ public class AuthenticationService {
         public void setAuthToken(String authToken) {
             this.authToken = authToken;
         }
+
+        @Override
+        public String toString() {
+            return username + USER_DETAIL_DELIMITER + Base64.getEncoder().encodeToString(salt) + USER_DETAIL_DELIMITER + Base64.getEncoder().encodeToString(passwordHash);
+        }
     }
 
     public AuthenticationService(String _userDatabasePath) {
@@ -66,10 +81,14 @@ public class AuthenticationService {
         if (!Files.exists(userDatabasePath)) {
             throw new FileNotFoundException("Database file not found: " + userDatabasePath);
         }
-        try (ObjectInputStream in = new ObjectInputStream(Files.newInputStream(userDatabasePath))) {
-            this.userDatabase = (Map<String, User>) in.readObject();
+        try (BufferedReader reader = Files.newBufferedReader(userDatabasePath)) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                User user = new User(line);
+                userDatabase.put(user.getUsername(), user);
+            }
             System.out.println("User database loaded from file: " + userDatabasePath);
-        } catch (IOException | ClassNotFoundException e) {
+        } catch (IOException e) {
             System.out.println("Error loading user database from file: " + e.getMessage());
         }
     }
@@ -79,14 +98,17 @@ public class AuthenticationService {
             System.out.println("Creating new user database file: " + userDatabasePath);
             Files.createFile(userDatabasePath);
         }
-        try (ObjectOutputStream out = new ObjectOutputStream(Files.newOutputStream(userDatabasePath))) {
-            out.writeObject(userDatabase);
-            out.flush();
+        try (BufferedWriter writer = Files.newBufferedWriter(userDatabasePath)) {
+            for (User user : userDatabase.values()) {
+                writer.write(user.toString());
+                writer.newLine();
+            }
             System.out.println("User database saved to file: " + userDatabasePath);
         } catch (IOException e) {
             System.out.println("Error saving user database to file: " + e.getMessage());
         }
     }
+    
 
 
     public User registerUser(String username, String password) throws Exception {
@@ -114,10 +136,12 @@ public class AuthenticationService {
     public boolean authenticateWithToken(String username, String authToken) {
         if (tokens.containsKey(authToken) && tokens.get(authToken).equals(username)) {
             System.out.println(authToken);
+            
             long tokenTimestamp = Long.parseLong(authToken.split("-")[1]);
             if (System.currentTimeMillis() - tokenTimestamp <= TOKEN_VALIDITY_PERIOD) {
                 return true; // Token is valid
             }
+            System.out.println("egggg");
             tokens.remove(authToken); // Token has expired
         }
         System.out.println("Token not found or expired");
@@ -127,7 +151,7 @@ public class AuthenticationService {
     private String generateAuthToken() {
         // Generate a unique token by combining a UUID with a timestamp.
         String timestamp = String.valueOf(System.currentTimeMillis());
-        String randomUUID = String.valueOf(UUID.randomUUID().hashCode());
+        String randomUUID = String.valueOf(UUID.randomUUID().hashCode() & Integer.MAX_VALUE);
         return randomUUID + "-" + timestamp;
     }
 
@@ -147,28 +171,22 @@ public class AuthenticationService {
     }
 
     public static void main(String[] args) throws Exception {
-        String userDatabasePath = "C:\\Users\\Maciek\\Desktop\\DTU\\semester_3\\data_security\\assignement_2\\02239_Authentication_Lab\\users.txt";
+        String userDatabasePath = "C:\\Users\\Maciek\\Desktop\\DTU\\semester_3\\data_security\\assignement_2\\02239_Authentication_Lab\\users.db";
 
         AuthenticationService authService = new AuthenticationService(userDatabasePath);
-        // authService.loadUsersFromFile();
 
         // Register a new user
-        User newUser1 = authService.registerUser("lefteris", "password123");
-        User newUser2 = authService.registerUser("admin", "admin");
-        User newUser3 = authService.registerUser("maciek", "passw0rd");
+        // User newUser1 = authService.registerUser("lefteris", "password123");
+        // User newUser2 = authService.registerUser("admin", "admin");
 
-
-        // // Authenticate the user
-        // String username = "lefteris";
-        // String password = "password123";
-        // String token = authService.loginUser(username, password);
-        // if ( authService.authenticateWithToken(username, token)) {
-        //     System.out.println("Authentication successful for user: " + username);
-        // } else {
-        //     System.out.println("Authentication failed for user: " + username);
+        // for(int i = 0; i < 10; i++) {
+        //     var token = authService.loginUser("lefteris", "password123");
+        //     if (token != null) {
+        //         System.out.println("Authentication successful for user: lefteris");
+        //     } else {
+        //         System.out.println("Authentication failed for user: lefteris");
+        //     }        
         // }
-
-        authService.saveUsersToFile();
     }
 }
 
