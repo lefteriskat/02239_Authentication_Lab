@@ -15,7 +15,6 @@ public class PrintClient {
             PrintServerInterface server = (PrintServerInterface) registry.lookup("PrintServer");
 
             // Call the server's methods and print the results
-            register(server, "lefteris", "password123");
             String token = signIn(server, "lefteris", "password123");
             print(server, "example.pdf", "MyPrinter1", "lefteris", token);
             queue(server, "MyPrinter1", "lefteris", token);
