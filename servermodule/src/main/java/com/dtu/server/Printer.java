@@ -1,4 +1,4 @@
-package server.src.main.java.com.dtu;
+package com.dtu.server;
 
 import java.util.LinkedList;
 

@@ -1,10 +1,10 @@
-package client.src.main.java.com.dtu;
+package com.dtu.client;
 
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 
-import server.PrintServerInterface;
+import com.dtu.servermodule.PrintServerInterface;
 
 public class PrintClient {
     public static void main(String[] args) {

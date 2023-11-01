@@ -1,4 +1,4 @@
-package server.src.main.java.com.dtu;
+package com.dtu.server;
 
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -8,7 +8,7 @@ import java.util.Map;
 public class PrintServer {
     public static void main(String[] args) {
         try {
-            String userDatabasePath = "C:\\Users\\Maciek\\Desktop\\DTU\\semester_3\\data_security\\assignement_2\\02239_Authentication_Lab\\users.db";
+            String userDatabasePath = "/home/lefteris/Documents/DTU_Courses/Autumn_2023/Data_Security/Assignment_2/02239_Authentication_Lab/users.db";
 
             // Create printers to be used for the server
             Printer printer1 = new Printer("MyPrinter1");
