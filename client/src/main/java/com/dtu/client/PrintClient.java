@@ -4,7 +4,7 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 
-import com.dtu.servermodule.PrintServerInterface;
+import com.dtu.myinterface.PrintServerInterface;
 
 public class PrintClient {
     public static void main(String[] args) {

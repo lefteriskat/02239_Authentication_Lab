@@ -5,6 +5,8 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.dtu.myinterface.PrintServerInterface;
+
 public class PrintServerImpl extends UnicastRemoteObject implements PrintServerInterface {
     private Map<String, Printer> printers;
     private boolean isPrintServerRunning;
