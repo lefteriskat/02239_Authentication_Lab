@@ -14,7 +14,20 @@ public class PrintClient {
 
             // Look up the server object by name
             PrintServerInterface server = (PrintServerInterface) registry.lookup("PrintServer");
+            
+            //register(server,"tiago","1234567");
+            String token = signIn(server, "tiago", "1234567");
 
+            print(server, "example.pdf", "MyPrinter1", "tiago", token);
+            queue(server, "MyPrinter1", "tiago", token);
+            topQueue(server, "MyPrinter1", 2, "tiago", token); // Move the 2nd job to the top.
+            start(server, "tiago", token);
+            stop(server, "tiago", token);
+            restart(server, "tiago", token);
+            status(server, "MyPrinter1", "tiago", token);
+            setConfig(server, "someParameter", "NewValue", "tiago", token);
+            readConfig(server, "someParameter", "tiago", token);
+            /*
             // Call the server's methods and print the results
             String token = signIn(server, "lefteris", "password123");
             print(server, "example.pdf", "MyPrinter1", "lefteris", token);
@@ -26,7 +39,7 @@ public class PrintClient {
             status(server, "MyPrinter1", "lefteris", token);
             setConfig(server, "someParameter", "NewValue", "lefteris", token);
             readConfig(server, "someParameter", "lefteris", token);
-            
+            */
         } catch (Exception e) {
             System.err.println("Client exception: " + e.toString());
             e.printStackTrace();

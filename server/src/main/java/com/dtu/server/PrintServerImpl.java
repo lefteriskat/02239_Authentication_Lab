@@ -4,6 +4,8 @@ import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.HashMap;
 import java.util.Map;
+import java.sql.Connection;
+import java.sql.SQLException;
 
 import com.dtu.myinterface.PrintServerInterface;
 
@@ -28,6 +30,12 @@ public class PrintServerImpl extends UnicastRemoteObject implements PrintServerI
         configParams = new HashMap<>();
         printers = _printers;
         authenticationService = new AuthenticationService(userDatabasePath);
+    }
+    public PrintServerImpl(Connection conn, Map<String, Printer> _printers) throws RemoteException, SQLException {
+        isPrintServerRunning = false;
+        configParams = new HashMap<>();
+        printers = _printers;
+        authenticationService = new AuthenticationService(conn);
     }
 
     @Override

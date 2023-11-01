@@ -12,15 +12,44 @@ import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public class AuthenticationService {
     private Path userDatabasePath;
+    public Connection conn;
     private Map<String, User> userDatabase = new HashMap<>();
     private Map<String, String> tokens = new HashMap<>();
 
     public static final long TOKEN_VALIDITY_PERIOD = 3600000; // 1 hour in milliseconds
 
     public static final String USER_DETAIL_DELIMITER = ":::";
+
+    public static class DBMS{
+        private String url ;
+        private String DBusername;
+        private String DBpassword ;
+        
+        public DBMS(){
+            url = "jdbc:mariadb://localhost:3306/data_security";
+            DBusername = "root";
+            DBpassword = "tiasil2mac";
+        }
+
+        public String getUrl(){
+            return url;
+        }
+        public String getUsername(){
+            return DBusername;
+        }
+        public String getPassword(){
+            return DBpassword;
+        }
+    }
+
 
     public static class User{
         private String username;
@@ -32,6 +61,11 @@ public class AuthenticationService {
             this.username = username;
             this.salt = salt;
             this.passwordHash = passwordHash;
+        }
+        public User(String username, String passwordHash, String salt) {
+            this.username = username;
+            this.salt = Base64.getDecoder().decode(salt);
+            this.passwordHash = Base64.getDecoder().decode(passwordHash);
         }
 
         public User(String userString) {
@@ -66,13 +100,22 @@ public class AuthenticationService {
             return username + USER_DETAIL_DELIMITER + Base64.getEncoder().encodeToString(salt) + USER_DETAIL_DELIMITER + Base64.getEncoder().encodeToString(passwordHash);
         }
     }
-
+    /*Constructor to use system file */
     public AuthenticationService(String _userDatabasePath) {
         userDatabasePath = Path.of(_userDatabasePath);
         try {
             loadUsersFromFile();
         } catch (IOException e) {
             System.out.println("Error loading user database from file: " + e.getMessage());
+        }
+    }
+    /*Constructor to use MariaDB database connection*/
+    public AuthenticationService(Connection connection) throws SQLException {
+        conn=connection;
+        try {
+            loadUsersFromDatabase();
+        } catch (SQLException e) {
+            System.out.println("Error loading users data from database: " + e.getMessage());
         }
     }
 
@@ -91,6 +134,31 @@ public class AuthenticationService {
             System.out.println("Error loading user database from file: " + e.getMessage());
         }
     }
+    private void loadUsersFromDatabase() throws SQLException {
+
+        try (PreparedStatement selectStatement = conn.prepareStatement("select * from auth_users")) {
+
+            ResultSet rs = selectStatement.executeQuery();
+                
+
+            while (rs.next()) { // will traverse through all rows
+                String username = rs.getString("username");
+                String pw = rs.getString("hashed_password");
+                String salt = rs.getString("salt");
+
+                User user = new User(username,pw,salt);
+                userDatabase.put(user.getUsername(), user);
+                /* 
+                System.out.println(user);
+                System.out.println(pw);
+                System.out.println(salt);
+                System.out.println("--------------------------");*/
+            }
+            System.out.println("User data loaded from database successfully.");
+        } catch (SQLException e) {
+            System.out.println("Error loading users data from database: " + e.getMessage());
+        }
+    }
 
     public void saveUsersToFile() throws IOException {
         if (!Files.exists(userDatabasePath)) {
@@ -107,6 +175,31 @@ public class AuthenticationService {
             System.out.println("Error saving user database to file: " + e.getMessage());
         }
     }
+
+    public void saveUsersToDatabase() throws SQLException {
+        
+        String insertSql = "INSERT INTO auth_users (username, hashed_password, salt) VALUES (?, ?, ?)";
+        
+        try (PreparedStatement insertStatement = conn.prepareStatement(insertSql)) {
+
+            for (User user : userDatabase.values()) {
+
+                insertStatement.setString(1, user.username);
+                insertStatement.setString(2, Base64.getEncoder().encodeToString(user.passwordHash)); // passwordHash is Byte[]
+                insertStatement.setString(3, Base64.getEncoder().encodeToString(user.salt)); // salt is Byte[]
+
+                int rowsAffected = insertStatement.executeUpdate();
+
+                if (rowsAffected > 0) {
+                    System.out.println("User inserted successfully.");
+                } else {
+                    System.out.println("Failed to insert user.");
+                }
+            }
+        } catch (SQLException e) {
+                System.out.println("Error saving user database to file: " + e.getMessage());
+        }
+    }
     
 
 
@@ -115,9 +208,34 @@ public class AuthenticationService {
         byte[] passwordHash = hashPassword(password, salt);
         User newUser = new User(username, salt, passwordHash);
         userDatabase.put(username, newUser);
+        
+        //reopen connection
+        DBMS database = new DBMS();
+        
+        conn=DriverManager.getConnection(database.getUrl(), database.getUsername(), database.getPassword());
+
+        String insertSql = "INSERT INTO auth_users (username, hashed_password, salt) VALUES (?, ?, ?)";
+
+        /*add to the database */
+        try( PreparedStatement insertStatement = conn.prepareStatement(insertSql)){
+            insertStatement.setString(1, username);
+            insertStatement.setString(2, Base64.getEncoder().encodeToString(passwordHash)); // passwordHash is Byte[]
+            insertStatement.setString(3, Base64.getEncoder().encodeToString(salt)); // salt is Byte[]
+
+            int rowsAffected = insertStatement.executeUpdate();
+
+            if (rowsAffected > 0) {
+                System.out.println("User inserted successfully.");
+            } else {
+                System.out.println("Failed to insert user.");
+            }
+        }catch(SQLException e){
+            System.out.println("Failed to insert user at database.");
+            e.printStackTrace();
+        }
+
         return newUser;
     }
-
     public String loginUser(String username, String password) throws Exception {
         if (userDatabase.containsKey(username)) {
             User user = userDatabase.get(username);
@@ -170,9 +288,17 @@ public class AuthenticationService {
     }
 
     public static void main(String[] args) throws Exception {
-        String userDatabasePath = "C:\\Users\\Maciek\\Desktop\\DTU\\semester_3\\data_security\\assignement_2\\02239_Authentication_Lab\\users.db";
+        
+        String url = "jdbc:mariadb://localhost:3306/data_security";
+        String username = "root";
+        String password = "tiasil2mac";
 
-        AuthenticationService authService = new AuthenticationService(userDatabasePath);
+        try (Connection connection = DriverManager.getConnection(url, username, password)){
+            AuthenticationService authService = new AuthenticationService(connection);
+
+            System.out.println(authService.userDatabase.size());
+        }
+        
 
         // Register a new user
         // User newUser1 = authService.registerUser("lefteris", "password123");

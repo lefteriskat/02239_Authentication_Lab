@@ -2,25 +2,32 @@ package com.dtu.server;
 
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
 import com.dtu.myinterface.PrintServerInterface;
+import com.dtu.server.AuthenticationService.User;
 
 public class PrintServer {
     public static void main(String[] args) {
         try {
             String url = "jdbc:mariadb://localhost:3306/data_security";
-            String username = "lefteris";
-            String password = "12344321";
+            String username = "root";
+            String password = "tiasil2mac";
 
             try (Connection connection = DriverManager.getConnection(url, username, password);
                     Statement statement = connection.createStatement()) {
 
+                System.out.println("Connection successfully established");
+                
                 // Create the "data_security" database
                 statement.execute("CREATE DATABASE IF NOT EXISTS data_security");
 
@@ -35,28 +42,29 @@ public class PrintServer {
                         "PRIMARY KEY (username)" +
                         ")");
 
-                System.out.println("OOOOOOOOOOk");
+                // Create printers to be used for the server
+                Printer printer1 = new Printer("MyPrinter1");
+                Printer printer2 = new Printer("MyPrinter2");
+                Map<String, Printer> printers = Map.of(printer1.getName(), printer1, printer2.getName(), printer2);
+                
+                // Create the server object with the printers
+                PrintServerInterface server = new PrintServerImpl(connection, printers);
+                
+                // Create and start the RMI registry on port 1077
+                Registry registry = LocateRegistry.createRegistry(1077);
 
-            } catch (SQLException e) {
+                // Bind the server object to a name
+                registry.rebind("PrintServer", server);
+
+                System.out.println("Server is running...");
+                
+                
+
+            }catch (SQLException e) {
                 e.printStackTrace();
             }
-            String userDatabasePath = "/home/lefteris/Documents/DTU_Courses/Autumn_2023/Data_Security/Assignment_2/02239_Authentication_Lab/users.db";
 
-            // Create printers to be used for the server
-            Printer printer1 = new Printer("MyPrinter1");
-            Printer printer2 = new Printer("MyPrinter2");
-            Map<String, Printer> printers = Map.of(printer1.getName(), printer1, printer2.getName(), printer2);
             
-            // Create the server object with the printers
-            PrintServerInterface server = new PrintServerImpl(userDatabasePath, printers);
-            
-            // Create and start the RMI registry on port 1077
-            Registry registry = LocateRegistry.createRegistry(1077);
-
-            // Bind the server object to a name
-            registry.rebind("PrintServer", server);
-
-            System.out.println("Server is running...");
         } catch (Exception e) {
             System.err.println("Server exception: " + e.toString());
             e.printStackTrace();
