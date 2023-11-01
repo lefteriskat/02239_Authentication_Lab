@@ -2,19 +2,13 @@ package com.dtu.server;
 
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
 import com.dtu.myinterface.PrintServerInterface;
-import com.dtu.server.AuthenticationService.User;
 
 public class PrintServer {
     public static void main(String[] args) {

@@ -7,8 +7,8 @@ In order to compile the java files run the following from the root folder of the
 This will create a bin folder with all the compiled .class files.
 
 Then in order to run the server and client apps you have to open two terminals and run the following:
-* Server: `java -cp "<repo_home>/server/target/classes:<repo_home>myinterface/target/classes" com.dtu.server.PrintServer`
-* Client: `java -cp "<repo_home>/client/target/classes:<repo_home>myinterface/target/classes" com.dtu.server.PrintClient`
+* Server: `java -jar server/target/server-1.0-SNAPSHOT-jar-with-dependencies.jar`
+* Client: `java -jar client/target/client-1.0-SNAPSHOT-jar-with-dependencies.jar`
 
 ## Dummy data
 For the purpose of testing `users.db` file containing three registered users has been provided. Remember about setting the right path to the file before running the server.
