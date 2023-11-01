@@ -16,7 +16,7 @@ public class PrintServer {
         try {
             String url = "jdbc:mariadb://localhost:3306/data_security";
             String username = "lefteris";
-            String password = "12344321";
+            String password = "";
 
             try (Connection connection = DriverManager.getConnection(url, username, password);
                     Statement statement = connection.createStatement()) {
