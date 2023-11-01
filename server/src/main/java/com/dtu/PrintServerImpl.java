@@ -1,10 +1,9 @@
-package server;
+package server.src.main.java.com.dtu;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.HashMap;
 import java.util.Map;
-import server.auth.AuthenticationService;
 
 public class PrintServerImpl extends UnicastRemoteObject implements PrintServerInterface {
     private Map<String, Printer> printers;

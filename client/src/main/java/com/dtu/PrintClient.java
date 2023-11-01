@@ -1,8 +1,9 @@
-package client;
+package client.src.main.java.com.dtu;
 
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+
 import server.PrintServerInterface;
 
 public class PrintClient {

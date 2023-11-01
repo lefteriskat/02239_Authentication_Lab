@@ -1,4 +1,4 @@
-package server.auth;
+package server.src.main.java.com.dtu;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
