@@ -178,6 +178,10 @@ public class AuthenticationService {
 
     public void saveUsersToDatabase() throws SQLException {
         
+        if(conn.isClosed()){
+            DBMS database = new DBMS();
+            conn=DriverManager.getConnection(database.getUrl(), database.getUsername(), database.getPassword());
+        }
         String insertSql = "INSERT INTO auth_users (username, hashed_password, salt) VALUES (?, ?, ?)";
         
         try (PreparedStatement insertStatement = conn.prepareStatement(insertSql)) {
@@ -210,9 +214,11 @@ public class AuthenticationService {
         userDatabase.put(username, newUser);
         
         //reopen connection
-        DBMS database = new DBMS();
+        if(conn.isClosed()){
+            DBMS database = new DBMS();
+            conn=DriverManager.getConnection(database.getUrl(), database.getUsername(), database.getPassword());
+        }
         
-        conn=DriverManager.getConnection(database.getUrl(), database.getUsername(), database.getPassword());
 
         String insertSql = "INSERT INTO auth_users (username, hashed_password, salt) VALUES (?, ?, ?)";
 

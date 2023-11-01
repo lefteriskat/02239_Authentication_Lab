@@ -15,7 +15,7 @@ public class PrintClient {
             // Look up the server object by name
             PrintServerInterface server = (PrintServerInterface) registry.lookup("PrintServer");
             
-            //register(server,"tiago","1234567");
+            register(server,"tiago","1234567");
             String token = signIn(server, "tiago", "1234567");
 
             print(server, "example.pdf", "MyPrinter1", "tiago", token);
