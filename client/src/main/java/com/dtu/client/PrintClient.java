@@ -22,6 +22,7 @@ public class PrintClient {
             System.out.println("Register new user ...");
             //register new user
             register(server,"georgios","geo123rgios");
+            register(server,"tiago","1234567");
             
             System.out.println("------------SIGN IN------------------");
             System.out.println("Trying to sign in user with wrong password ...");

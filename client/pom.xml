@@ -16,9 +16,9 @@
     <dependencies>
         <!-- Include dependencies specific to the client module -->
         <dependency>
-            <groupId>com.dtu</groupId> <!-- Replace with the actual groupId of your server module -->
-            <artifactId>myinterface</artifactId> <!-- Replace with the actual artifactId of your server module -->
-            <version>1.0-SNAPSHOT</version>      <!-- Replace with the actual version of your server module -->
+            <groupId>com.dtu</groupId> 
+            <artifactId>myinterface</artifactId> 
+            <version>1.0-SNAPSHOT</version>  
         </dependency>
     </dependencies>
 

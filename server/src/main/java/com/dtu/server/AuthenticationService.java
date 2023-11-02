@@ -2,21 +2,29 @@ package com.dtu.server;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 import java.security.MessageDigest;
 import java.security.SecureRandom;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 import java.util.UUID;
+
+import com.dtu.myinterface.PrintServerInterface;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 public class AuthenticationService {
     private Path userDatabasePath;
@@ -38,9 +46,25 @@ public class AuthenticationService {
         private String DBpassword ;
         
         public DBMS(){
-            url = "jdbc:mariadb://localhost:3306/data_security";
-            DBusername = "root";
-            DBpassword = "tiasil2mac";
+            Properties properties = new Properties();
+            try (FileInputStream input = new FileInputStream("config.properties")) {
+                properties.load(input);
+            } catch (IOException e) {
+                e.printStackTrace();
+                return;
+            }
+
+            // Read the database configuration
+            String dbUrl = properties.getProperty("db.url");
+            String dbUsername = properties.getProperty("db.username");
+            String dbPassword = properties.getProperty("db.password");
+
+            // Use the configuration
+            System.out.println("Database URL: " + dbUrl);
+            System.out.println("Database Username: " + dbUsername);
+            url = dbUrl;
+            DBusername = dbUsername;
+            DBpassword = dbPassword;
         }
 
         public String getUrl(){
@@ -114,7 +138,34 @@ public class AuthenticationService {
         }
     }
     /*Constructor to use MariaDB database connection*/
-    public AuthenticationService(Connection connection) throws SQLException {
+    public AuthenticationService() throws SQLException {
+        
+        DBMS database = new DBMS();
+        Connection connection = null;
+        try {
+            connection = DriverManager.getConnection(database.getUrl(), database.getUsername(), database.getPassword());
+            Statement statement = connection.createStatement();
+
+            System.out.println("Connection successfully established");
+            
+            // Create the "data_security" database
+            statement.execute("CREATE DATABASE IF NOT EXISTS data_security");
+
+            // Select the "data_security" database
+            statement.execute("USE data_security");
+
+            // Create the "users" table
+            statement.execute("CREATE TABLE IF NOT EXISTS auth_users (" +
+                    "username VARCHAR(255) NOT NULL," +
+                    "hashed_password VARCHAR(255) NOT NULL," +
+                    "salt VARCHAR(255) NOT NULL," +
+                    "PRIMARY KEY (username)" +
+                    ")");
+        }catch (SQLException e) {
+            e.printStackTrace();
+            return;
+        }
+
         conn=connection;
         try {
             loadUsersFromDatabase();
@@ -296,33 +347,6 @@ public class AuthenticationService {
         byte[] passwordBytes = password.getBytes();
         md.update(passwordBytes);
         return md.digest();
-    }
-
-    public static void main(String[] args) throws Exception {
-        
-        String url = "jdbc:mariadb://localhost:3306/data_security";
-        String username = "root";
-        String password = "tiasil2mac";
-
-        try (Connection connection = DriverManager.getConnection(url, username, password)){
-            AuthenticationService authService = new AuthenticationService(connection);
-
-            System.out.println(authService.userDatabase.size());
-        }
-        
-
-        // Register a new user
-        // User newUser1 = authService.registerUser("lefteris", "password123");
-        // User newUser2 = authService.registerUser("admin", "admin");
-
-        // for(int i = 0; i < 10; i++) {
-        //     var token = authService.loginUser("lefteris", "password123");
-        //     if (token != null) {
-        //         System.out.println("Authentication successful for user: lefteris");
-        //     } else {
-        //         System.out.println("Authentication failed for user: lefteris");
-        //     }        
-        // }
-    }
+    } 
 }
 

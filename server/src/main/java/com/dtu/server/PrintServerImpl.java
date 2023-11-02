@@ -31,11 +31,11 @@ public class PrintServerImpl extends UnicastRemoteObject implements PrintServerI
         printers = _printers;
         authenticationService = new AuthenticationService(userDatabasePath);
     }
-    public PrintServerImpl(Connection conn, Map<String, Printer> _printers) throws RemoteException, SQLException {
+    public PrintServerImpl(Map<String, Printer> _printers) throws RemoteException, SQLException {
         isPrintServerRunning = false;
         configParams = new HashMap<>();
         printers = _printers;
-        authenticationService = new AuthenticationService(conn);
+        authenticationService = new AuthenticationService();
     }
 
     @Override
