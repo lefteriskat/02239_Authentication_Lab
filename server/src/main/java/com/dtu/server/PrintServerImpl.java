@@ -79,7 +79,9 @@ public class PrintServerImpl extends UnicastRemoteObject implements PrintServerI
             Printer target = printers.get(printer);
             String output;
             if ( target != null) {
-                output = "File: " + filename + " printed at Printer: " + printer + "!";
+                target.setStatus("ON");
+                target.addToQueue(filename);
+                output = "File: " + filename + " added to printer: " + printer + " queue!";
             }
             else {
                 output = "No printer with name: " + printer + " !";
@@ -167,7 +169,7 @@ public class PrintServerImpl extends UnicastRemoteObject implements PrintServerI
             Printer target = printers.get(printer);
             String output;
             if ( target != null) {
-                output = "Printer " + printer + "Status:" + target.getStatus();
+                output = "Printer " + printer + " Status: " + target.getStatus();
             }
             else {
                 output = "No printer with name: " + printer + " !";

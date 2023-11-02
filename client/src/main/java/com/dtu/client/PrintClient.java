@@ -15,8 +15,71 @@ public class PrintClient {
             // Look up the server object by name
             PrintServerInterface server = (PrintServerInterface) registry.lookup("PrintServer");
             
-            register(server,"tiago","1234567");
-            String token = signIn(server, "tiago", "1234567");
+            //register(server,"tiago","1234567");
+
+            System.out.println("------------REGISTER------------------");
+
+            System.out.println("Register new user ...");
+            //register new user
+            register(server,"georgios","geo123rgios");
+            
+            System.out.println("------------SIGN IN------------------");
+            System.out.println("Trying to sign in user with wrong password ...");
+            //try log in user with wrong password
+            String token = signIn(server, "tiago", "tiago123");
+            
+            System.out.println("Sign in user with correct password ...");
+            //log in user with correct password
+            token = signIn(server, "tiago", "1234567");
+            
+            System.out.println("------------PRINTER SERVER------------------");
+            System.out.println("Start printer server ...");
+            start(server, "tiago", token);
+            System.out.println("Stop printer server ...");
+            stop(server, "tiago", token);
+            System.out.println("Start printer server again ...");
+            start(server, "tiago", token);
+
+            //printer status
+            System.out.println("------------STATUS----------------");
+            status(server, "MyPrinter1", "tiago", token);
+
+            System.out.println("------------PRINT----------------");
+            System.out.println("Add files to the queue with logged in user account and respective token ...");
+            //add files to printer queue
+            print(server, "example1.pdf", "MyPrinter1", "tiago", token);
+            print(server, "example2.pdf", "MyPrinter1", "tiago", token);
+            print(server, "example3.pdf", "MyPrinter1", "tiago", token);
+
+            
+            System.out.println("Trying to add file to the queue with not logged in username (georgios) ...");
+            //add files with a user who is not logged in
+            print(server, "example4.pdf", "MyPrinter1", "georgios", token);
+            
+            System.out.println("------------QUEUE----------------");
+            //check printer queue list
+            queue(server, "MyPrinter1", "tiago", token);
+            
+            //move job 2 to the top of the queue
+            topQueue(server, "MyPrinter1", 2, "tiago", token); // Move the 2nd job to the top.
+
+            //confirm the top of the queue is job 2            
+            queue(server, "MyPrinter1", "tiago", token);
+            
+            System.out.println("------------CONFIG------------------");
+            //set config
+            setConfig(server, "Draft Mode", "YES", "tiago", token);
+
+            //read config
+            readConfig(server, "Draft Mode", "tiago", token);
+
+            //restart printer server
+            restart(server, "tiago", token);
+
+            System.out.println("------------QUEUE AFTER RESTART----------------");
+            queue(server, "MyPrinter1", "tiago", token);
+
+            /* 
 
             print(server, "example.pdf", "MyPrinter1", "tiago", token);
             queue(server, "MyPrinter1", "tiago", token);
@@ -26,7 +89,7 @@ public class PrintClient {
             restart(server, "tiago", token);
             status(server, "MyPrinter1", "tiago", token);
             setConfig(server, "someParameter", "NewValue", "tiago", token);
-            readConfig(server, "someParameter", "tiago", token);
+            readConfig(server, "someParameter", "tiago", token);*/
             /*
             // Call the server's methods and print the results
             String token = signIn(server, "lefteris", "password123");
@@ -57,12 +120,20 @@ public class PrintClient {
 
     private static String signIn(PrintServerInterface server, String username, String password) throws RemoteException {
         String token = null;
+        String AUTHENTICATION_ERROR_PASSWORD = "Authentication failed due to wrong password.Access to printer denied.";
+        String AUTHENTICATION_ERROR_USERNAME= "Authentication failed because username doesn't exist.Access to printer denied.";
+    
         try {
             token = server.signIn(username, password);
-            if( token != null) {
-                System.out.println("Client: User " + username + "signed in successfully!");
+            if( !token.equals(AUTHENTICATION_ERROR_PASSWORD) && !token.equals(AUTHENTICATION_ERROR_USERNAME)) {
+                System.out.println("Client: User " + username + "signed in successfully. Access to printer authorized.");
+                return token;
             }
-            return token;
+            else {
+                System.err.println("Client: " + token);
+                return null;
+            }
+            
             
         } catch (RemoteException e) {
             System.err.println("Error: " + e.getMessage());

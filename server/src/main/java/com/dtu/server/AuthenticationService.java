@@ -28,6 +28,10 @@ public class AuthenticationService {
 
     public static final String USER_DETAIL_DELIMITER = ":::";
 
+    private static final String AUTHENTICATION_ERROR_PASSWORD = "Authentication failed due to wrong password.Access to printer denied.";
+    private static final String AUTHENTICATION_ERROR_USERNAME= "Authentication failed because username doesn't exist.Access to printer denied.";
+
+
     public static class DBMS{
         private String url ;
         private String DBusername;
@@ -206,7 +210,6 @@ public class AuthenticationService {
     }
     
 
-
     public User registerUser(String username, String password) throws Exception {
         byte[] salt = generateSalt();
         byte[] passwordHash = hashPassword(password, salt);
@@ -253,7 +256,9 @@ public class AuthenticationService {
                 return authToken;
             }
         }
-        return null; // Authentication failed
+        else return AUTHENTICATION_ERROR_USERNAME; // Authentication failed
+        
+        return AUTHENTICATION_ERROR_PASSWORD; // Authentication failed
     }
 
     public boolean authenticateWithToken(String username, String authToken) {
