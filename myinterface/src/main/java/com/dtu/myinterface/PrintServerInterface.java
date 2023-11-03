@@ -1,4 +1,4 @@
-package server;
+package com.dtu.myinterface;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;

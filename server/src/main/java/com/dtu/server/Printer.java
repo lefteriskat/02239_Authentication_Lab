@@ -1,4 +1,4 @@
-package server;
+package com.dtu.server;
 
 import java.util.LinkedList;
 
@@ -44,8 +44,8 @@ public class Printer {
             String selectedJobFileName = printQueue.get(job - 1); // Adjust for 0-based index.
             printQueue.remove(job - 1);
             printQueue.addFirst(selectedJobFileName);
-
-            return "Job number " + job + "with filename:" + selectedJobFileName + "moved to the top of the queue.";
+ 
+            return "Job number " + job + " with filename: " + selectedJobFileName + " moved to the top of the queue.";
         } else {
             return "Invalid job number.";
         }

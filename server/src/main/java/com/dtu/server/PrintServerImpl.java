@@ -1,10 +1,13 @@
-package server;
+package com.dtu.server;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.HashMap;
 import java.util.Map;
-import server.auth.AuthenticationService;
+import java.sql.Connection;
+import java.sql.SQLException;
+
+import com.dtu.myinterface.PrintServerInterface;
 
 public class PrintServerImpl extends UnicastRemoteObject implements PrintServerInterface {
     private Map<String, Printer> printers;
@@ -27,6 +30,12 @@ public class PrintServerImpl extends UnicastRemoteObject implements PrintServerI
         configParams = new HashMap<>();
         printers = _printers;
         authenticationService = new AuthenticationService(userDatabasePath);
+    }
+    public PrintServerImpl(Map<String, Printer> _printers) throws RemoteException, SQLException {
+        isPrintServerRunning = false;
+        configParams = new HashMap<>();
+        printers = _printers;
+        authenticationService = new AuthenticationService();
     }
 
     @Override
@@ -70,7 +79,9 @@ public class PrintServerImpl extends UnicastRemoteObject implements PrintServerI
             Printer target = printers.get(printer);
             String output;
             if ( target != null) {
-                output = "File: " + filename + " printed at Printer: " + printer + "!";
+                target.setStatus("ON");
+                target.addToQueue(filename);
+                output = "File: " + filename + " added to printer: " + printer + " queue!";
             }
             else {
                 output = "No printer with name: " + printer + " !";
@@ -158,7 +169,7 @@ public class PrintServerImpl extends UnicastRemoteObject implements PrintServerI
             Printer target = printers.get(printer);
             String output;
             if ( target != null) {
-                output = "Printer " + printer + "Status:" + target.getStatus();
+                output = "Printer " + printer + " Status: " + target.getStatus();
             }
             else {
                 output = "No printer with name: " + printer + " !";
