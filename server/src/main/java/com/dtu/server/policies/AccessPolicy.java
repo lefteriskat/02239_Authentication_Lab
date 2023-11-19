@@ -22,6 +22,7 @@ public class AccessPolicy{
         
             case userBased:
                 // code to check Role Permission
+                RoleBasedPolicies.CheckRolePermission(username, op);
                 break;
 
             default:
