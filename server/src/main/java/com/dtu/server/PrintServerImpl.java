@@ -1,7 +1,6 @@
 package com.dtu.server;
 
 import com.dtu.server.policies.AccessPolicy;
-import com.dtu.server.policies.UserBasedPolicies;
 import com.dtu.server.policies.AccessPolicy.AccessPolicyOptions;
 
 import java.rmi.RemoteException;
@@ -10,7 +9,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.sql.Connection;
 import java.sql.SQLException;
-import com.dtu.server.loaders.UsersLoader;
 import com.dtu.myinterface.PrintServerInterface;
 
 public class PrintServerImpl extends UnicastRemoteObject implements PrintServerInterface {
@@ -47,7 +45,6 @@ public class PrintServerImpl extends UnicastRemoteObject implements PrintServerI
         configParams = new HashMap<>();
         printers = _printers;
         authenticationService = new AuthenticationService();
-        
         accessPolicy = new AccessPolicy(p);
 
     }

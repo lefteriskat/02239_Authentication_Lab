@@ -14,7 +14,7 @@ public class AccessPolicy{
     public AccessPolicy(AccessPolicyOptions p){
         policy=p;
     }
-    public void checkPermission(String username, Operations op){
+    public void checkPermission(String username, Operations op) throws IllegalArgumentException{
         switch (policy) {
             case roleBased:
                 UserBasedPolicies.CheckUserPermission(username, op);

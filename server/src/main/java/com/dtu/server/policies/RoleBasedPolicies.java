@@ -23,7 +23,6 @@ public class RoleBasedPolicies {
         }
         if (!roleOperations.contains(op)) {
             throw new IllegalArgumentException("User "+ username+ " is not allowed to perform "+op+".");
-
         }
     }
     

@@ -15,8 +15,10 @@ public class PrintClient {
             // Look up the server object by name
             PrintServerInterface server = (PrintServerInterface) registry.lookup("PrintServer");
             
+            testBasedAccessControl(server);
             //register(server,"tiago","1234567");
 
+            /* 
             System.out.println("------------REGISTER------------------");
 
             System.out.println("Register new user ...");
@@ -79,7 +81,7 @@ public class PrintClient {
 
             System.out.println("------------QUEUE AFTER RESTART----------------");
             queue(server, "MyPrinter1", "tiago", token);
-
+            */
             /* 
 
             print(server, "example.pdf", "MyPrinter1", "tiago", token);
@@ -222,5 +224,41 @@ public class PrintClient {
             System.err.println("Error: " + e.getMessage());
         }
     }
-}
+    private static void testUser(String username, PrintServerInterface server) throws RemoteException{
+        
+        String printer="Printer1";
+        String token;
+        token = signIn(server, username, printer);
+        //should we ignore sign in ? If we do, we need to stop verifying tokens
 
+        System.out.println("Evaluate "+ username +" permissions: ");
+        start(server, username, token);
+        
+        print(server, "example1.pdf", printer, username, token);
+
+        queue(server, "MyPrinter1", username, token);
+        topQueue(server, "MyPrinter1", 1, username, token);
+
+        restart(server, username, token);
+
+        status(server,printer, username, token);
+        setConfig(server, "Draft Mode", "YES", username, token);
+        readConfig(server, "Draft Mode", username, token);
+        
+        stop(server, username, token);
+    }
+    private static void testBasedAccessControl(PrintServerInterface s) throws RemoteException{
+
+        testUser("Alice", s);
+        testUser("Bob", s);
+        testUser("Cecilia", s);
+        testUser("David", s);
+        testUser("Erica", s);
+        testUser("Fred", s);
+        testUser("George", s);
+        testUser("Henry", s);
+        testUser("Ida", s);
+
+        /*the tests depend if the server is configured to manage in RBAC or UBAC approach to evaluate both*/
+    }
+}
