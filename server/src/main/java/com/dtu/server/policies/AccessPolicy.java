@@ -16,17 +16,17 @@ public class AccessPolicy{
     }
     public void checkPermission(String username, Operations op) throws IllegalArgumentException{
         switch (policy) {
-            case roleBased:
+            case userBased:
                 UserBasedPolicies.CheckUserPermission(username, op);
                 break;
         
-            case userBased:
+            case roleBased:
                 // code to check Role Permission
                 RoleBasedPolicies.CheckRolePermission(username, op);
                 break;
 
             default:
-                throw new IllegalArgumentException("Invalid access controll policy.");
+                throw new IllegalArgumentException("Invalid access control policy.");
         }
     }
 }

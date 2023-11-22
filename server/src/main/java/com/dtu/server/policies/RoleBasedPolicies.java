@@ -3,6 +3,7 @@ package com.dtu.server.policies;
 import java.util.Set;
 
 import com.dtu.server.Operations;
+import com.dtu.server.loaders.RolesLoader;
 import com.dtu.server.loaders.UsersLoader;
 
 public class RoleBasedPolicies {
@@ -16,14 +17,15 @@ public class RoleBasedPolicies {
         /*
          * code to get user's role
         */
-
-        Set<Operations> roleOperations = UsersLoader.usersOperations.get(username);
+        /* 
+        Set<Operations> roleOperations = RolesLoader.getRoleOperations();
         if(roleOperations == null || roleOperations.isEmpty()) {
             throw new IllegalArgumentException("User "+ username+ " does not have any operations assigned.");
         }
         if (!roleOperations.contains(op)) {
             throw new IllegalArgumentException("User "+ username+ " is not allowed to perform "+op+".");
-        }
+        }*/
+        /*SQL queries to get Role permission */
     }
     
 }

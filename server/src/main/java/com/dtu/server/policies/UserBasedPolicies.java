@@ -15,6 +15,7 @@ public class UserBasedPolicies {
      *Responsible to check if the user is allowed to perform the operation
      */
     public static void CheckUserPermission(String username,Operations op)  {
+        /* 
         Set<Operations> userOperations = UsersLoader.usersOperations.get(username);
         if(userOperations == null || userOperations.isEmpty()) {
             throw new IllegalArgumentException("User "+ username+ " does not have any operations assigned.");
@@ -22,6 +23,7 @@ public class UserBasedPolicies {
         if (!userOperations.contains(op)) {
             throw new IllegalArgumentException("User "+ username+ " is not allowed to perform "+op+".");
         }
+        */
     }
 
 
