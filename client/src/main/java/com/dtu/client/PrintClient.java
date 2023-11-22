@@ -229,7 +229,6 @@ public class PrintClient {
         String printer="Printer1";
         String token;
         token = signIn(server, username, printer);
-        //should we ignore sign in ? If we do, we need to stop verifying tokens
 
         System.out.println("Evaluate "+ username +" permissions: ");
         start(server, username, token);

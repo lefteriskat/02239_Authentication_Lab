@@ -87,8 +87,6 @@ public class PrintServerImpl extends UnicastRemoteObject implements PrintServerI
     @Override
     public String print(String filename, String printer, String username, String token) throws RemoteException {
         if (authenticationService.authenticateWithToken(username, token)) {
-            
-
             try{
                 accessPolicy.checkPermission(username, Operations.print);
                 //it will throw an exception if it is not allowed

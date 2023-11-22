@@ -3,16 +3,14 @@ package com.dtu.server;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.Map;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.sql.Statement;
 
 import com.dtu.myinterface.PrintServerInterface;
 import com.dtu.server.loaders.RolesLoader;
 import com.dtu.server.loaders.UsersLoader;
 import com.dtu.server.loaders.UsersToRolesLoader;
 import com.dtu.server.policies.AccessPolicy;
+import com.dtu.server.policies.RoleBasedPolicies;
+import com.dtu.server.policies.UserBasedPolicies;
 import com.dtu.server.policies.AccessPolicy.AccessPolicyOptions;
 
 public class PrintServer {
@@ -24,6 +22,7 @@ public class PrintServer {
             Printer printer2 = new Printer("MyPrinter2");
             Map<String, Printer> printers = Map.of(printer1.getName(), printer1, printer2.getName(), printer2);
             
+            /* 
             //load users operations permissions
             UsersLoader.load();
             
@@ -31,11 +30,15 @@ public class PrintServer {
             RolesLoader.load();
 
             //load users and respective roles
-            UsersToRolesLoader.load();
+            UsersToRolesLoader.load();*/
 
             AccessPolicyOptions accessPolicy= AccessPolicy.AccessPolicyOptions.userBased;
             //AccessPolicyOptions accessPolicy= AccessPolicy.AccessPolicyOptions.roleBased;
 
+            UserBasedPolicies.startUserBasedPoliciesConnection();
+            
+            RoleBasedPolicies.startRoleBasedPoliciesConnection();
+            
             // Create the server object with the printers
             PrintServerInterface server = new PrintServerImpl(printers,accessPolicy);
             
@@ -52,4 +55,5 @@ public class PrintServer {
             e.printStackTrace();
         }
     }
+
 }

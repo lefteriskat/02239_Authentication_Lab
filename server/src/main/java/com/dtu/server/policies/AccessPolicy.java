@@ -1,7 +1,8 @@
 package com.dtu.server.policies;
 
+import java.sql.SQLException;
+
 import com.dtu.server.Operations;
-import com.dtu.server.policies.UserBasedPolicies;
 
 public class AccessPolicy{
     public enum AccessPolicyOptions {
@@ -14,7 +15,7 @@ public class AccessPolicy{
     public AccessPolicy(AccessPolicyOptions p){
         policy=p;
     }
-    public void checkPermission(String username, Operations op) throws IllegalArgumentException{
+    public void checkPermission(String username, Operations op) throws IllegalArgumentException, SQLException{
         switch (policy) {
             case userBased:
                 UserBasedPolicies.CheckUserPermission(username, op);
