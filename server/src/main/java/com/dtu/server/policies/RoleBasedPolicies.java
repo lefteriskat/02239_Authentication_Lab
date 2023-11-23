@@ -5,6 +5,8 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 import com.dtu.server.AuthenticationService.DBMS;
@@ -62,20 +64,6 @@ public class RoleBasedPolicies {
 
         String selectSqlRoles = "SELECT UR.role_id FROM UsersRoles UR WHERE UR.username = ?";
         
-
-        try (PreparedStatement selectStatement = conn.prepareStatement(selectSqlRoles)) {
-
-            selectStatement.setString(1, username);
-            ResultSet rs = selectStatement.executeQuery();
-
-            
-            while (rs.next()) { // will traverse through all rows
-                /*code to get all the Roles assigned to the username */
-            }
-            
-        } catch (SQLException e) {
-                System.out.println("Error saving user database to file: " + e.getMessage());
-        }
         /*A: get roles of the user
 
 			Arguments: $USERNAME
@@ -84,10 +72,24 @@ public class RoleBasedPolicies {
 			FROM UsersRoles UR
 			WHERE UR.username = $USERNAME
 
-			Return: $ROLEIDS (list of all roles assigned to user)
-	
+			Return: $ROLEIDS (list of all roles assigned to user) */
+        List<Integer> roleIds = new ArrayList<>();
+        try (PreparedStatement selectStatement = conn.prepareStatement(selectSqlRoles)) {
 
-	
+            selectStatement.setString(1, username);
+            ResultSet rs = selectStatement.executeQuery();
+            
+            
+            while (rs.next()) { // will traverse through all rows
+                /*code to get all the Roles assigned to the username */
+                int role = rs.getInt("role_id");
+                roleIds.add(role);
+            }
+        } catch (SQLException e) {
+                System.out.println("Error retrieving data from database " + e.getMessage());
+        }
+        
+        /*
 		B: get all parent roles of all roles
 		# It has to be done in a loop for inheritance of higher level than one
 
@@ -98,9 +100,36 @@ public class RoleBasedPolicies {
 			WHERE RP.parent_role_id in $ROLEIDS 
 	
 			Return: $PARENTROLEIDS
+        */
+        // to be sure connection is open
+        if(conn.isClosed()){
+            DBMS database = new DBMS();
+            conn=DriverManager.getConnection(database.getUrl(), database.getUsername(), database.getPassword());
+        }
+        
+        String selectSqlParents = "SELECT RP.parent_role_id FROM RolesParents RP WHERE RP.parent_role_id in ?" ;
 
+        for (int i = 0; i < roleIds.size(); i++) {
+            try (PreparedStatement selectStatement = conn.prepareStatement(selectSqlParents)) {
 
+                selectStatement.setInt(1, roleIds.get(i)); //role index i 
+                ResultSet rs = selectStatement.executeQuery();
+                
+                while (rs.next()) { // will traverse through all rows
+                    /*code to get all the Roles assigned to the username */
+                    int role = rs.getInt("role_id"); //not sure about this 
 
+                    //check if this role is already in the list
+                    if (!roleIds.contains(role)){
+                        roleIds.add(role);
+                    }
+                }
+            } catch (SQLException e) {
+                    System.out.println("Error retrieving data from database " + e.getMessage());
+            }
+        }
+
+        /*
 		C: get all operations for all roles and all parent roles
 		
 			Arguments: $ROLEIDS, $PARENTROLEIDS, $OPERATIONID
@@ -113,7 +142,33 @@ public class RoleBasedPolicies {
 			) AND RO.operation_id = $OPERATIONID
 	
 			Return: 0 - if user does not have permission
-				>0 - if user has permission */
+				>0 - if user has permission 
+        */
+
+        String selectSqlOperation = "SELECT COUNT(*) FROM RolesOperations RO WHERE (RO.role_id in ? AND RO.operation_id = ?" ;
+
+        for (int i = 0; i < roleIds.size(); i++) {
+            try (PreparedStatement selectStatement = conn.prepareStatement(selectSqlOperation)) {
+
+                selectStatement.setInt(1, roleIds.get(i)); //role index i
+                selectStatement.setInt(2, op.getValue()); //operation
+                ResultSet rs = selectStatement.executeQuery();
+                
+                while (rs.next()) { // will traverse through all rows
+                    /*code to get all the Roles assigned to the username */
+                    int permission = rs.getInt("Count(*)"); //not sure about this 
+                    if(permission>0){
+                        //we confirm the operation is allowed
+                    }
+                }
+            } catch (SQLException e) {
+                    System.out.println("Error retrieving data from database " + e.getMessage());
+            }
+        }
+
+        //if it arrives here is because the permission is not allowed, so we should return an error
+        throw new IllegalArgumentException("User "+ username+ " is not allowed to perform "+op+".");
+
     }
     
 }
