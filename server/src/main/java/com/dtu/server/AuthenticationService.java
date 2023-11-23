@@ -148,14 +148,14 @@ public class AuthenticationService {
 
             System.out.println("Connection successfully established");
             
-            // Create the "data_security" database
-            statement.execute("CREATE DATABASE IF NOT EXISTS data_security");
+            // Create the "RBAC" database
+            statement.execute("CREATE DATABASE IF NOT EXISTS RBAC");
 
-            // Select the "data_security" database
-            statement.execute("USE data_security");
+            // Select the "RBAC" database
+            statement.execute("USE RBAC");
 
             // Create the "users" table
-            statement.execute("CREATE TABLE IF NOT EXISTS auth_users (" +
+            statement.execute("CREATE TABLE IF NOT EXISTS Users (" +
                     "username VARCHAR(255) NOT NULL," +
                     "hashed_password VARCHAR(255) NOT NULL," +
                     "salt VARCHAR(255) NOT NULL," +
@@ -191,7 +191,7 @@ public class AuthenticationService {
     }
     private void loadUsersFromDatabase() throws SQLException {
 
-        try (PreparedStatement selectStatement = conn.prepareStatement("select * from auth_users")) {
+        try (PreparedStatement selectStatement = conn.prepareStatement("select * from Users")) {
 
             ResultSet rs = selectStatement.executeQuery();
                 
@@ -237,7 +237,7 @@ public class AuthenticationService {
             DBMS database = new DBMS();
             conn=DriverManager.getConnection(database.getUrl(), database.getUsername(), database.getPassword());
         }
-        String insertSql = "INSERT INTO auth_users (username, hashed_password, salt) VALUES (?, ?, ?)";
+        String insertSql = "INSERT INTO Users (username, hashed_password, salt) VALUES (?, ?, ?)";
         
         try (PreparedStatement insertStatement = conn.prepareStatement(insertSql)) {
 
@@ -274,7 +274,7 @@ public class AuthenticationService {
         }
         
 
-        String insertSql = "INSERT INTO auth_users (username, hashed_password, salt) VALUES (?, ?, ?)";
+        String insertSql = "INSERT INTO Users (username, hashed_password, salt) VALUES (?, ?, ?)";
 
         /*add to the database */
         try( PreparedStatement insertStatement = conn.prepareStatement(insertSql)){

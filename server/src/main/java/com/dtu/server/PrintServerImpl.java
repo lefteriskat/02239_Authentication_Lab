@@ -22,24 +22,6 @@ public class PrintServerImpl extends UnicastRemoteObject implements PrintServerI
     private static final String AUTHENTICATION_ERROR = "Authentication required! Please sign in or register if you don't have an account";
     private static final String SERVER_ERROR = "Server error";
 
-    /* 
-    public PrintServerImpl(String userDatabasePath) throws RemoteException {
-        isPrintServerRunning = false;
-        configParams = new HashMap<>();
-        printers = new HashMap<>();
-        authenticationService = new AuthenticationService(userDatabasePath);
-        
-        
-    }
-
-    public PrintServerImpl(String userDatabasePath, Map<String, Printer> _printers) throws RemoteException {
-        isPrintServerRunning = false;
-        configParams = new HashMap<>();
-        printers = _printers;
-        authenticationService = new AuthenticationService(userDatabasePath);
-
-     
-    }*/
     public PrintServerImpl(Map<String, Printer> _printers, AccessPolicyOptions p) throws RemoteException, SQLException {
         isPrintServerRunning = false;
         configParams = new HashMap<>();

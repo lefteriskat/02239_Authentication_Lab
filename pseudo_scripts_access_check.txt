@@ -1,0 +1,80 @@
+# with assumption we have username as Primary Key in Users table
+# generally
+
+Access List:
+
+	1) loadOperations()
+	# To save it to HashMap with available operations
+
+		SELECT O.operation_id, O.operation_name
+		FROM Operations O
+
+		Return: $OPERATIONIDS
+
+
+	2) checkUserPermission(username, operation_id)
+
+		Arguments: $USERNAME, $OPERATIONID
+
+		SELECT COUNT(*)
+		FROM UsersOperations UO
+		WHERE UO.username = $USERNAME
+		AND UO.operation_id = $OPERATIONID
+		
+		Return: 1 - if user has permission for this operation
+			0 - if doesnt
+
+
+
+Role Based:
+
+	1) loadOperations()
+	# To save it to HashMap with available operations
+
+		SELECT O.operation_id, O.operation_name
+		FROM Operations O
+
+		Return: $OPERATIONIDS
+
+	2) checkUserPermission(username, operation_id)
+	# Divided into seperate queries for simplicity
+
+	
+		A: get roles of the user
+
+			Arguments: $USERNAME
+
+			SELECT UR.role_id
+			FROM UsersRoles UR
+			WHERE UR.username = $USERNAME
+
+			Return: $ROLEIDS (list of all roles assigned to user)
+	
+
+	
+		B: get all parent roles of all roles
+		# It has to be done in a loop for inheritance of higher level than one
+
+			Arguments: $ROLEIDS
+
+			SELECT RP.parent_role_id
+			FROM RolesParents RP
+			WHERE RP.parent_role_id in $ROLEIDS 
+	
+			Return: $PARENTROLEIDS
+
+
+
+		C: get all operations for all roles and all parent roles
+		
+			Arguments: $ROLEIDS, $PARENTROLEIDS, $OPERATIONID
+	
+			SELECT COUNT(*)
+			FROM RolesOperations RO
+			WHERE (
+				RO.role_id in $PARENTROLEIDS
+				OR RO.role_id in $ROLEIDS
+			) AND RO.operation_id = $OPERATIONID
+	
+			Return: 0 - if user does not have permission
+				>0 - if user has permission

@@ -69,20 +69,20 @@ public class UserBasedPolicies {
             conn=DriverManager.getConnection(database.getUrl(), database.getUsername(), database.getPassword());
         }
 
-        String selectSql = "SELECT COUNT(*) FROM USERSOPERATIONS UO WHERE UO.username = ? and UO.operation_id = ?";
+        String selectSql = "SELECT COUNT(*) as mycount FROM UsersOperations UO WHERE UO.username = ? and UO.operation_id = ?";
         
         try (PreparedStatement selectStatement = conn.prepareStatement(selectSql)) {
-
+            int auth=1;
             selectStatement.setString(1, username);
             selectStatement.setInt(2, op.getValue());
             ResultSet rs = selectStatement.executeQuery();
-
-            int auth=rs.getInt(1); //maybe it's not column 1. Not sure 
-
+            if (rs.next()) {
+                    auth=rs.getInt("mycount");
+            } 
             if(auth==0) throw new IllegalArgumentException("User "+ username+ " is not allowed to perform "+op+".");
             
         } catch (SQLException e) {
-                System.out.println("Error saving user database to file: " + e.getMessage());
+                throw new SQLException("Error when querying the db: " + e.getMessage());
         }
 
     }

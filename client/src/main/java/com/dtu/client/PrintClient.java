@@ -224,11 +224,11 @@ public class PrintClient {
             System.err.println("Error: " + e.getMessage());
         }
     }
-    private static void testUser(String username, PrintServerInterface server) throws RemoteException{
+    private static void testUser(String username, String password, PrintServerInterface server) throws RemoteException{
         
-        String printer="Printer1";
+        String printer="MyPrinter1";
         String token;
-        token = signIn(server, username, printer);
+        token = signIn(server, username, password);
 
         System.out.println("Evaluate "+ username +" permissions: ");
         start(server, username, token);
@@ -248,15 +248,15 @@ public class PrintClient {
     }
     private static void testBasedAccessControl(PrintServerInterface s) throws RemoteException{
 
-        testUser("Alice", s);
-        testUser("Bob", s);
-        testUser("Cecilia", s);
-        testUser("David", s);
-        testUser("Erica", s);
-        testUser("Fred", s);
-        testUser("George", s);
-        testUser("Henry", s);
-        testUser("Ida", s);
+        testUser("Alice", "pass1", s);
+        testUser("Bob", "pass2", s);
+        testUser("Cecilia", "pass3", s);
+        testUser("David", "pass4", s);
+        testUser("Erica", "pass5", s);
+        testUser("Fred", "pass6", s);
+        testUser("George", "pass7", s);
+        // testUser("Henry", s);
+        // testUser("Ida", s);
 
         /*the tests depend if the server is configured to manage in RBAC or UBAC approach to evaluate both*/
     }

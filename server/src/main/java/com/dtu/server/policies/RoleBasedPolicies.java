@@ -26,8 +26,6 @@ public class RoleBasedPolicies {
             connection = DriverManager.getConnection(database.getUrl(), database.getUsername(), database.getPassword());
 
             System.out.println("Connection successfully established");
-            
-            /*Statements to create tables needed for RoleBased Policies*/
 
         }catch (SQLException e) {
             e.printStackTrace();
@@ -43,19 +41,6 @@ public class RoleBasedPolicies {
         *Responsible to check if  role is the user is allowed to perform the operation taking into account his role
      */
     public static void CheckRolePermission(String username,Operations op) throws SQLException  {
-        /*
-         * code to get user's role
-        */
-        /* 
-        Set<Operations> roleOperations = RolesLoader.getRoleOperations();
-        if(roleOperations == null || roleOperations.isEmpty()) {
-            throw new IllegalArgumentException("User "+ username+ " does not have any operations assigned.");
-        }
-        if (!roleOperations.contains(op)) {
-            throw new IllegalArgumentException("User "+ username+ " is not allowed to perform "+op+".");
-        }*/
-        /*SQL queries to get Role permission */
-
         // to be sure connection is open
         if(conn.isClosed()){
             DBMS database = new DBMS();
@@ -86,7 +71,7 @@ public class RoleBasedPolicies {
                 roleIds.add(role);
             }
         } catch (SQLException e) {
-                System.out.println("Error retrieving data from database " + e.getMessage());
+                System.out.println("1: Error retrieving data from database " + e.getMessage());
         }
         
         /*
@@ -107,7 +92,7 @@ public class RoleBasedPolicies {
             conn=DriverManager.getConnection(database.getUrl(), database.getUsername(), database.getPassword());
         }
         
-        String selectSqlParents = "SELECT RP.parent_role_id FROM RolesParents RP WHERE RP.parent_role_id in ?" ;
+        String selectSqlParents = "SELECT RP.role_id FROM RolesParents RP WHERE RP.parent_role_id = ?" ;
 
         for (int i = 0; i < roleIds.size(); i++) {
             try (PreparedStatement selectStatement = conn.prepareStatement(selectSqlParents)) {
@@ -125,7 +110,7 @@ public class RoleBasedPolicies {
                     }
                 }
             } catch (SQLException e) {
-                    System.out.println("Error retrieving data from database " + e.getMessage());
+                    System.out.println("2: Error retrieving data from database " + e.getMessage());
             }
         }
 
@@ -145,9 +130,10 @@ public class RoleBasedPolicies {
 				>0 - if user has permission 
         */
 
-        String selectSqlOperation = "SELECT COUNT(*) FROM RolesOperations RO WHERE (RO.role_id in ? AND RO.operation_id = ?" ;
+        
 
         for (int i = 0; i < roleIds.size(); i++) {
+            String selectSqlOperation = "SELECT COUNT(*) FROM RolesOperations RO WHERE RO.role_id = ? AND RO.operation_id = ?" ;
             try (PreparedStatement selectStatement = conn.prepareStatement(selectSqlOperation)) {
 
                 selectStatement.setInt(1, roleIds.get(i)); //role index i
@@ -158,11 +144,11 @@ public class RoleBasedPolicies {
                     /*code to get all the Roles assigned to the username */
                     int permission = rs.getInt("Count(*)"); //not sure about this 
                     if(permission>0){
-                        //we confirm the operation is allowed
+                        return;
                     }
                 }
             } catch (SQLException e) {
-                    System.out.println("Error retrieving data from database " + e.getMessage());
+                    System.out.println("3: Error retrieving data from database " + e.getMessage());
             }
         }
 

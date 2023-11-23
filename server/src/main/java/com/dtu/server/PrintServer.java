@@ -32,15 +32,24 @@ public class PrintServer {
             //load users and respective roles
             UsersToRolesLoader.load();*/
 
-            AccessPolicyOptions accessPolicy= AccessPolicy.AccessPolicyOptions.userBased;
-            //AccessPolicyOptions accessPolicy= AccessPolicy.AccessPolicyOptions.roleBased;
+            //AccessPolicyOptions accessPolicy= AccessPolicy.AccessPolicyOptions.userBased;
+            AccessPolicyOptions accessPolicy= AccessPolicy.AccessPolicyOptions.roleBased;
+
+            PrintServerInterface server = new PrintServerImpl(printers,accessPolicy);
+            // server.register("Alice", "pass1");
+            // server.register("Bob", "pass2");
+            // server.register("Cecilia", "pass3");
+            // server.register("David", "pass4");
+            // server.register("Erica", "pass5");
+            // server.register("Fred", "pass6");
+            // server.register("George", "pass7");
 
             UserBasedPolicies.startUserBasedPoliciesConnection();
             
             RoleBasedPolicies.startRoleBasedPoliciesConnection();
             
             // Create the server object with the printers
-            PrintServerInterface server = new PrintServerImpl(printers,accessPolicy);
+            
             
             // Create and start the RMI registry on port 1077
             Registry registry = LocateRegistry.createRegistry(1077);
