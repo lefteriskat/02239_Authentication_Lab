@@ -1,6 +1,9 @@
-# 02239_Authentication_Lab
+# 02239 Authentication and Access Control Lab
 
 ## Command line Usage Instructions
+Before running the application you have to install MariaDB and run  the `RBAC.sql` file to create the database used by the application.
+Then if you want to perform the updates described in the description of the Access Control Lab you have to run the file `updates.sql`.
+
 In order to compile the java files run the following from the root folder of the repo:
 * `mvn clean install`
 
