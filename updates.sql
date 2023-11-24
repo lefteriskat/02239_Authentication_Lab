@@ -1,7 +1,7 @@
 USE RBAC;
 
 
--- For ACL
+-- Common operations
 
 INSERT INTO Users (username, hashed_password, salt) VALUES
 ('Henry', 'Z0jqZ2Wl42sMhf4fFieXKFpyeXsFHqJLBUyfTyt95Lo', 'IfZ1Y65X0pwOuCB/DDQqeQ=='),
@@ -9,7 +9,9 @@ INSERT INTO Users (username, hashed_password, salt) VALUES
 
 DELETE FROM Users WHERE username = 'Bob';
 
-DELETE FROM UsersOperations WHERE username = 'George';
+
+
+-- ACL operations
 
 INSERT INTO UsersOperations (user_operation_id, username, operation_id) VALUES
 (27, 'George', 7),
@@ -21,6 +23,9 @@ INSERT INTO UsersOperations (user_operation_id, username, operation_id) VALUES
 (33, 'Ida', 2),
 (34, 'Ida',3)
 ;
+
+
+-- RBAC operations
 
 INSERT INTO UsersRoles (userrole_id, username, role_id) VALUES
 (9, 'George', 2),

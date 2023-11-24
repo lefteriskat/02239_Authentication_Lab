@@ -153,6 +153,4 @@ INSERT INTO RolesParents (roles_parent_id, role_id, parent_role_id) VALUES
 (1, 2, 1),
 (2, 3, 1),
 (3, 4, 1),
-(4, 5, 2),
-(5, 5, 3),
 (6, 5, 4);
