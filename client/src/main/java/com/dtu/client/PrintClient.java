@@ -255,8 +255,8 @@ public class PrintClient {
         testUser("Erica", "pass5", s);
         testUser("Fred", "pass6", s);
         testUser("George", "pass7", s);
-        // testUser("Henry", s);
-        // testUser("Ida", s);
+        testUser("Henry", "pass1", s);
+        testUser("Ida", "pass2", s);
 
         /*the tests depend if the server is configured to manage in RBAC or UBAC approach to evaluate both*/
     }

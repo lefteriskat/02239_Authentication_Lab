@@ -31,7 +31,7 @@ CREATE TABLE UsersOperations (
     user_operation_id INT PRIMARY KEY,
     username VARCHAR(50) NOT NULL,
     operation_id INT NOT NULL,
-    FOREIGN KEY (username) REFERENCES Users(username),
+    FOREIGN KEY (username) REFERENCES Users(username) ON DELETE CASCADE,
     FOREIGN KEY (operation_id) REFERENCES Operations(operation_id)
 );
 
@@ -40,7 +40,7 @@ CREATE TABLE UsersRoles (
     userrole_id INT PRIMARY KEY,
     username VARCHAR(50) NOT NULL,
     role_id INT NOT NULL,
-    FOREIGN KEY (username) REFERENCES Users(username),
+    FOREIGN KEY (username) REFERENCES Users(username) ON DELETE CASCADE,
     FOREIGN KEY (role_id) REFERENCES Roles(role_id)
 );
 

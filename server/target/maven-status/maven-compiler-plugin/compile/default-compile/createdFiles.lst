@@ -1,6 +1,0 @@
-com/dtu/server/PrintServerImpl.class
-com/dtu/server/Printer.class
-com/dtu/server/AuthenticationService.class
-com/dtu/server/AuthenticationService$User.class
-com/dtu/server/PrintServer.class
-com/dtu/server/AuthenticationService$DBMS.class
