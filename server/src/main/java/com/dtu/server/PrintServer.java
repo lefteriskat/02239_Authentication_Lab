@@ -5,9 +5,6 @@ import java.rmi.registry.Registry;
 import java.util.Map;
 
 import com.dtu.myinterface.PrintServerInterface;
-import com.dtu.server.loaders.RolesLoader;
-import com.dtu.server.loaders.UsersLoader;
-import com.dtu.server.loaders.UsersToRolesLoader;
 import com.dtu.server.policies.AccessPolicy;
 import com.dtu.server.policies.RoleBasedPolicies;
 import com.dtu.server.policies.UserBasedPolicies;
