@@ -7,7 +7,6 @@ import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.HashMap;
 import java.util.Map;
-import java.sql.Connection;
 import java.sql.SQLException;
 import com.dtu.myinterface.PrintServerInterface;
 

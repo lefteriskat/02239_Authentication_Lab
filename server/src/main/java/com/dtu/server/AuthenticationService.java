@@ -7,8 +7,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
 import java.security.MessageDigest;
 import java.security.SecureRandom;
 import java.util.Base64;
@@ -16,8 +14,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 import java.util.UUID;
-
-import com.dtu.myinterface.PrintServerInterface;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

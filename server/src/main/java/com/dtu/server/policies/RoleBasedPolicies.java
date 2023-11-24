@@ -7,10 +7,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import com.dtu.server.AuthenticationService.DBMS;
-import com.dtu.server.AuthenticationService.User;
 import com.dtu.server.Operations;
 
 public class RoleBasedPolicies {
